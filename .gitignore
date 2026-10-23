@@ -1,0 +1,23 @@
+# ---- 凭证：绝不入库 ----
+.github_token
+.token
+*.pem
+*.key
+.env
+.env.*
+
+# ---- 内部过程文档：不进公开仓库 ----
+发布步骤.md
+闭环固化_*.md
+GitHub授权失败_解决指引_*.md
+publish.py
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+
+# ---- 系统垃圾 ----
+.DS_Store
+Thumbs.db
+desktop.ini
