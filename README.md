@@ -45,6 +45,14 @@ python src/toon_parser.py src/sample_nutrition.toon
 
 > 仓库内的 `mcp-config.example.json` 为**脱敏模板**（仅 `${MCD_MCP_TOKEN}` 环境变量占位符），请据此配置，真实 Token 通过环境变量注入，**勿提交进仓库或出现在截图**。
 
+## 🌐 在线体验（无需安装，30 秒上手）
+
+不想装 Python？直接打开在线版，输入家庭人数 / 单日预算 / 营养目标 / 忌口，实时生成可执行的家庭餐方案与预算结余：
+
+👉 **https://xiaoxin-workbench-54232.app.workbuddy.host/**
+
+在线版与仓库内 `webapp/index.html` 同源，均为**单文件静态页**，可下载到本地双击打开，逻辑与 `src/planner.py` 完全一致（内置 22 款麦当劳样例餐品，开箱即跑）。
+
 ## 📁 目录结构
 
 ```
@@ -61,6 +69,8 @@ python src/toon_parser.py src/sample_nutrition.toon
 │   ├── toon_parser.py         # 麦当劳营养 TOON 文本解析器（纯标准库）
 │   ├── sample_menu.json       # 演示用样例菜单（价格单位：元）
 │   └── sample_nutrition.toon  # 演示用营养 TOON 样本（含含逗号描述）
+├── webapp/
+│   └── index.html             # 单文件交互体验页（无需后端，浏览器直接打开 / 在线版同源）
 └── examples/
     ├── demo_report.html       # 示例报告（3人/120元/均衡/忌辣牛肉）
     └── demo_report_2.html     # 示例报告（2人/80元/减脂）
