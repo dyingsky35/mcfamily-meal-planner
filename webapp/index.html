@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>麦麦家庭餐规划助手 · 在线体验</title>
+<style>
+  :root{
+    --red:#DA291C; --red-d:#aa1e14; --yellow:#FFC72C;
+    --ink:#1d1d1f; --muted:#6b6b70; --line:#efe4d8;
+    --bg:#fff8f0; --card:#ffffff; --green:#2e7d32; --amber:#e59a00;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink);
+    background:radial-gradient(1100px 520px at 50% -8%,#ffe9b8 0%,#fff4e2 42%,#fdf8f2 100%);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:28px 18px 64px}
+  header.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .logo{width:52px;height:52px;border-radius:14px;background:var(--red);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 8px 20px rgba(218,41,28,.28)}
+  .titles h1{margin:0;font-size:23px;letter-spacing:.2px}
+  .titles p{margin:4px 0 0;color:var(--muted);font-size:13.5px}
+  .badge{display:inline-block;margin-left:auto;background:var(--yellow);color:#5a3b00;font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px rgba(120,70,20,.08);padding:20px;margin-top:18px}
+  .card h2{margin:0 0 14px;font-size:16px;display:flex;align-items:center;gap:8px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:620px){.grid{grid-template-columns:1fr}}
+  label.f{display:block;font-size:13px;color:#444;font-weight:600;margin-bottom:7px}
+  .num{display:flex;align-items:center;gap:8px}
+  .num button{width:38px;height:38px;border:none;border-radius:11px;background:#f4ece3;color:var(--red);font-size:20px;font-weight:700;cursor:pointer;transition:.15s}
+  .num button:hover{background:#efe2d6}
+  .num input{flex:1;min-width:0;height:38px;border:1.5px solid var(--line);border-radius:11px;text-align:center;font-size:16px;font-weight:700;color:var(--ink);background:#fff}
+  .num input:focus{outline:none;border-color:var(--red)}
+  .seg{display:flex;gap:8px;flex-wrap:wrap}
+  .seg .opt{flex:1;min-width:80px;text-align:center;padding:10px 8px;border:1.5px solid var(--line);border-radius:12px;font-size:14px;font-weight:600;color:#555;cursor:pointer;background:#fff;transition:.15s}
+  .seg .opt:hover{border-color:#e2cdb6}
+  .seg .opt.on{background:var(--red);border-color:var(--red);color:#fff;box-shadow:0 6px 16px rgba(218,41,28,.25)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  .chip{padding:8px 14px;border:1.5px solid var(--line);border-radius:999px;font-size:13.5px;color:#555;cursor:pointer;background:#fff;user-select:none;transition:.15s}
+  .chip:hover{border-color:#e2cdb6}
+  .chip.on{background:#fff1e8;border-color:var(--red);color:var(--red-d);font-weight:700}
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;align-items:center}
+  .btn{flex:1;min-width:180px;height:50px;border:none;border-radius:14px;background:var(--red);color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 10px 22px rgba(218,41,28,.3);transition:.15s;letter-spacing:.5px}
+  .btn:hover{background:var(--red-d);transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .btn.ghost{flex:none;background:#fff;color:#666;border:1.5px solid var(--line);box-shadow:none;font-weight:600;font-size:14px;padding:0 18px;min-width:0}
+  .btn.ghost:hover{background:#faf6f1;color:#333}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:10px}
+  /* result */
+  #result{margin-top:20px;display:none}
+  .res-head{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .res-head h2{margin:0;font-size:18px}
+  .meta{color:var(--muted);font-size:13px;line-height:1.6}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0 4px}
+  @media(max-width:620px){.metrics{grid-template-columns:1fr 1fr}}
+  .metric{border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#fffdfa}
+  .metric .lab{display:flex;justify-content:space-between;font-size:12.5px;color:#555;font-weight:600}
+  .metric .lab b{color:var(--ink)}
+  .bar{background:#eee6dc;border-radius:8px;height:9px;overflow:hidden;margin:8px 0 5px}
+  .fill{height:100%;border-radius:8px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+  .metric small{color:#9a9a9f;font-size:11.5px}
+  .meal{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:14px}
+  .meal .hd{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:linear-gradient(90deg,#fff5e9,#fffaf4);border-bottom:1px solid var(--line)}
+  .meal .hd .nm{font-weight:800;color:var(--red-d);font-size:15px;display:flex;align-items:center;gap:7px}
+  .meal .hd .cost{font-size:13px;color:#666;font-weight:600}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{padding:9px 10px;text-align:center;border-bottom:1px solid #f6efe7}
+  th{background:#fdfaf6;color:#8a8a8f;font-weight:600;font-size:12.5px}
+  td:first-child,th:first-child{text-align:left;font-weight:600;color:#333}
+  tr:last-child td{border-bottom:none}
+  .empty{padding:18px;text-align:center;color:#b0a89f;font-size:13px}
+  .total{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding:14px 16px;background:linear-gradient(90deg,#fff3e0,#fffaf3);border:1px solid #f3e2cd;border-radius:14px;flex-wrap:wrap;gap:8px}
+  .total .t1{font-size:14px;color:#555;font-weight:600}
+  .total .t2{font-size:22px;font-weight:900;color:var(--red)}
+  .total .t2 small{font-size:13px;color:#999;font-weight:600;margin-left:4px}
+  .tip{margin-top:14px;background:#fff8e1;border-left:4px solid var(--amber);padding:12px 14px;font-size:13.5px;line-height:1.65;border-radius:0 10px 10px 0;color:#6b5800}
+  footer{margin-top:26px;text-align:center;color:#9b968f;font-size:12px;line-height:1.7}
+  footer b{color:#7a736b}
+  .tag{display:inline-block;background:#f2ece4;color:#7d756c;font-size:11.5px;padding:3px 9px;border-radius:8px;margin:0 3px 4px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">🍔</div>
+    <div class="titles">
+      <h1>麦麦家庭餐规划助手</h1>
+      <p>输入人数、预算与营养目标，一键生成全家一日三餐方案 · 基于麦当劳 MCP</p>
+    </div>
+    <span class="badge">1024 造物挑战</span>
+  </header>
+
+  <!-- 输入 -->
+  <div class="card">
+    <h2>🧾 设置你的家庭参数</h2>
+    <div class="grid">
+      <div>
+        <label class="f">家庭人数</label>
+        <div class="num">
+          <button type="button" onclick="step('people',-1)">−</button>
+          <input id="people" type="number" min="1" max="8" value="3">
+          <button type="button" onclick="step('people',1)">+</button>
+        </div>
+      </div>
+      <div>
+        <label class="f">单日总预算（元）</label>
+        <div class="num">
+          <button type="button" onclick="step('budget',-10)">−</button>
+          <input id="budget" type="number" min="30" max="600" step="10" value="120">
+          <button type="button" onclick="step('budget',10)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <label class="f">营养目标</label>
+      <div class="seg" id="goalSeg">
+        <div class="opt on" data-g="均衡">均衡</div>
+        <div class="opt" data-g="减脂">减脂</div>
+        <div class="opt" data-g="增肌">增肌</div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px">
+      <label class="f">忌口 / 排除（可多选）</label>
+      <div class="chips" id="avoidChips">
+        <span class="chip" data-t="辣">辣</span>
+        <span class="chip" data-t="牛肉">牛肉</span>
+        <span class="chip" data-t="鸡肉">鸡肉</span>
+        <span class="chip" data-t="猪肉">猪肉</span>
+        <span class="chip" data-t="鸡蛋">鸡蛋</span>
+        <span class="chip" data-t="芝士">芝士</span>
+        <span class="chip" data-t="牛奶">牛奶</span>
+        <span class="chip" data-t="油炸">油炸</span>
+        <span class="chip" data-t="含糖">含糖</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="generate()">✨ 生成全家三餐方案</button>
+      <button class="btn ghost" onclick="preset(3,120,'均衡')">示例：一家三口 ¥120</button>
+    </div>
+    <div class="hint">数据来源：麦当劳公开菜单与营养信息（内置样本）。实际餐品、价格与库存以门店为准；本工具仅做规划与查询，不代下单。</div>
+  </div>
+
+  <!-- 结果 -->
+  <div id="result">
+    <div class="card">
+      <div class="res-head">
+        <h2>📊 今日规划报告</h2>
+        <span class="meta" id="resMeta"></span>
+      </div>
+      <div class="metrics" id="metrics"></div>
+      <div id="meals"></div>
+      <div class="total">
+        <div class="t1">预计总花费</div>
+        <div class="t2" id="totalCost">¥0.0 <small id="totalHint"></small></div>
+      </div>
+      <div class="tip" id="tip"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div><b>麦麦家庭餐规划助手</b> · WorkBuddy 1024 造物挑战参赛作品</div>
+    <div style="margin-top:8px">
+      <span class="tag">家庭营养 × 预算联合规划</span>
+      <span class="tag">麦当劳 MCP</span>
+      <span class="tag">纯前端 · 零依赖</span>
+    </div>
+    <div style="margin-top:10px">本报告基于麦当劳公开菜单数据生成，仅供参考，不构成营养或专业建议。</div>
+  </footer>
+</div>
+
+<script>
+/* ========== 数据（与 src/sample_menu.json 一致） ========== */
+const MENU = [
+  {name:"吉士蛋麦满分", meals:["早餐","任意"], kcal:290, protein:17, fat:12, carb:28, price:14.0, tags:["鸡蛋","芝士"]},
+  {name:"猪柳蛋麦满分", meals:["早餐","任意"], kcal:340, protein:19, fat:16, carb:30, price:16.0, tags:["猪肉","鸡蛋"]},
+  {name:"脆薯饼", meals:["早餐","任意"], kcal:220, protein:3, fat:13, carb:23, price:7.0, tags:["素","油炸"]},
+  {name:"鲜煮咖啡(中)", meals:["早餐","任意"], kcal:5, protein:0, fat:0, carb:1, price:12.0, tags:["素","饮品"]},
+  {name:"橙汁(小)", meals:["早餐","任意"], kcal:90, protein:1, fat:0, carb:21, price:10.0, tags:["素","饮品"]},
+  {name:"鲜煮牛奶", meals:["早餐","任意"], kcal:150, protein:8, fat:8, carb:12, price:11.0, tags:["素","饮品","牛奶"]},
+  {name:"巨无霸", meals:["午餐","晚餐","任意"], kcal:522, protein:25, fat:28, carb:42, price:22.0, tags:["牛肉","生菜"]},
+  {name:"麦辣鸡腿堡", meals:["午餐","晚餐","任意"], kcal:498, protein:21, fat:26, carb:44, price:21.0, tags:["鸡肉","辣"]},
+  {name:"板烧鸡腿堡", meals:["午餐","晚餐","任意"], kcal:389, protein:23, fat:16, carb:38, price:20.0, tags:["鸡肉"]},
+  {name:"双层吉士堡", meals:["午餐","晚餐","任意"], kcal:440, protein:25, fat:23, carb:33, price:19.0, tags:["牛肉","芝士"]},
+  {name:"吉士汉堡", meals:["午餐","晚餐","任意"], kcal:301, protein:15, fat:13, carb:32, price:13.0, tags:["牛肉"]},
+  {name:"麦香鸡", meals:["午餐","晚餐","任意"], kcal:388, protein:16, fat:20, carb:37, price:14.0, tags:["鸡肉"]},
+  {name:"薯条(中)", meals:["午餐","晚餐","任意"], kcal:320, protein:4, fat:16, carb:41, price:12.0, tags:["素","油炸"]},
+  {name:"玉米杯", meals:["午餐","晚餐","任意"], kcal:130, protein:4, fat:2, carb:27, price:9.0, tags:["素"]},
+  {name:"苹果片", meals:["任意"], kcal:35, protein:0, fat:0, carb:8, price:8.0, tags:["素","水果"]},
+  {name:"麦乐鸡(6块)", meals:["午餐","晚餐","任意"], kcal:290, protein:17, fat:16, carb:18, price:15.0, tags:["鸡肉"]},
+  {name:"麦辣鸡翅(2块)", meals:["午餐","晚餐","任意"], kcal:290, protein:17, fat:19, carb:11, price:13.0, tags:["鸡肉","辣"]},
+  {name:"圆筒冰淇淋", meals:["任意"], kcal:200, protein:4, fat:9, carb:27, price:5.0, tags:["素","甜"]},
+  {name:"苹果派", meals:["任意"], kcal:220, protein:2, fat:10, carb:31, price:7.0, tags:["素","甜","油炸"]},
+  {name:"可乐(中)", meals:["任意"], kcal:150, protein:0, fat:0, carb:39, price:10.0, tags:["素","饮品","含糖"]},
+  {name:"雪碧(中)", meals:["任意"], kcal:140, protein:0, fat:0, carb:37, price:10.0, tags:["素","饮品","含糖"]},
+  {name:"纯牛奶", meals:["任意"], kcal:150, protein:8, fat:8, carb:12, price:11.0, tags:["素","饮品","牛奶"]}
+];
+
+const GOALS = {
+  "均衡": {kcal:2000, protein:60, fat:70, carb:250},
+  "减脂": {kcal:1500, protein:75, fat:45, carb:150},
+  "增肌": {kcal:2600, protein:110, fat:80, carb:320}
+};
+const MEALS = ["早餐","午餐","晚餐"];
+const RATIO = {"早餐":0.25,"午餐":0.40,"晚餐":0.35};
+const MEAL_ICON = {"早餐":"🌅","午餐":"☀️","晚餐":"🌙"};
+
+/* ========== 规划引擎（与 planner.py 同逻辑） ========== */
+function plan(menu, people, budget, goal, avoid){
+  const base = GOALS[goal];
+  const target = {kcal:base.kcal*people, protein:base.protein*people, fat:base.fat*people, carb:base.carb*people};
+  const result = {"早餐":[],"午餐":[],"晚餐":[]};
+  const spent = {v:0};
+  for(const meal of MEALS){
+    const mealBudget = budget * RATIO[meal];
+    const cands = menu.filter(m =>
+      (m.meals.includes(meal) || m.meals.includes("任意")) &&
+      m.price <= mealBudget &&
+      !(m.tags||[]).some(t => avoid.includes(t))
+    );
+    const value = m => (m.protein*2 + m.kcal) / Math.max(m.price,1);
+    cands.sort((a,b)=> value(b)-value(a));
+    let mealCost = 0;
+    const picks = [];
+    for(const m of cands){
+      if(mealCost + m.price <= mealBudget && picks.length < 3){
+        picks.push(m);
+        mealCost += m.price;
+      }
+    }
+    result[meal] = picks;
+    spent.v += mealCost;
+  }
+  return {result, target, spent: spent.v};
+}
+
+/* ========== UI 交互 ========== */
+let goal = "均衡";
+document.querySelectorAll("#goalSeg .opt").forEach(el=>{
+  el.onclick = () => {
+    document.querySelectorAll("#goalSeg .opt").forEach(o=>o.classList.remove("on"));
+    el.classList.add("on"); goal = el.dataset.g;
+  };
+});
+document.querySelectorAll("#avoidChips .chip").forEach(el=>{
+  el.onclick = () => el.classList.toggle("on");
+});
+
+function step(id, d){
+  const inp = document.getElementById(id);
+  let v = (parseFloat(inp.value)||0) + d;
+  const min = parseFloat(inp.min), max = parseFloat(inp.max);
+  v = Math.max(min, Math.min(max, v));
+  inp.value = v;
+}
+function preset(p,b,g){
+  document.getElementById("people").value = p;
+  document.getElementById("budget").value = b;
+  document.querySelectorAll("#goalSeg .opt").forEach(o=>{
+    o.classList.toggle("on", o.dataset.g === g);
+  });
+  goal = g;
+  generate();
+}
+function barColor(pct){ return pct>=80 ? "#2e7d32" : (pct>=50 ? "#e59a00" : "#DA291C"); }
+
+function generate(){
+  const people = Math.max(1, parseInt(document.getElementById("people").value)||1);
+  const budget = Math.max(10, parseFloat(document.getElementById("budget").value)||0);
+  const avoid = Array.from(document.querySelectorAll("#avoidChips .chip.on")).map(e=>e.dataset.t);
+
+  const {result, target, spent} = plan(MENU, people, budget, goal, avoid);
+
+  // 合计营养
+  const total = {kcal:0, protein:0, fat:0, carb:0};
+  MEALS.forEach(m => result[m].forEach(it => { for(const k in total) total[k] += it[k]; }));
+
+  document.getElementById("resMeta").textContent =
+    `目标：${goal} ｜ 人数：${people} ｜ 预算：¥${budget.toFixed(0)} ｜ 忌口：${avoid.length?avoid.join("、"):"无"}`;
+
+  // 营养指标
+  const specs = [["热量","kcal","kcal"],["蛋白质","protein","g"],["脂肪","fat","g"],["碳水","carb","g"]];
+  document.getElementById("metrics").innerHTML = specs.map(([lab,k,unit])=>{
+    const pct = target[k] ? Math.min(100, Math.round(total[k]/target[k]*100)) : 0;
+    const c = barColor(pct);
+    return `<div class="metric">
+      <div class="lab"><span>${lab}</span><b>${pct}%</b></div>
+      <div class="bar"><div class="fill" style="width:${pct}%;background:${c}"></div></div>
+      <small>${total[k]} / ${target[k]} ${unit}</small>
+    </div>`;
+  }).join("");
+
+  // 三餐明细
+  document.getElementById("meals").innerHTML = MEALS.map(meal=>{
+    const items = result[meal];
+    const mealCost = items.reduce((s,x)=>s+x.price,0);
+    let rows = items.map(it=>`<tr>
+      <td>${it.name}</td><td>${it.kcal}</td><td>${it.protein}</td>
+      <td>${it.fat}</td><td>${it.carb}</td><td>¥${it.price.toFixed(1)}</td>
+    </tr>`).join("");
+    if(!items.length) rows = `<tr><td colspan="6" class="empty">（本餐预算内无匹配餐品，可加预算或放宽忌口）</td></tr>`;
+    return `<div class="meal">
+      <div class="hd"><span class="nm">${MEAL_ICON[meal]} ${meal}</span><span class="cost">小计 ¥${mealCost.toFixed(1)}</span></div>
+      <table>
+        <tr><th>餐品</th><th>热量</th><th>蛋白</th><th>脂肪</th><th>碳水</th><th>价格</th></tr>
+        ${rows}
+      </table>
+    </div>`;
+  }).join("");
+
+  // 总计
+  const left = budget - spent;
+  document.getElementById("totalCost").innerHTML = `¥${spent.toFixed(1)} <small>预算 ¥${budget.toFixed(0)}·结余 ¥${left.toFixed(1)}</small>`;
+
+  // 提示
+  let tip;
+  if(spent >= budget*0.95) tip = "已接近预算上限，可微调餐品组合或加购优惠券压缩成本。";
+  else if(spent === 0) tip = "当前预算/忌口组合过紧，没有匹配到餐品，建议提高预算或放宽忌口。";
+  else tip = `还可结余约 ¥${left.toFixed(1)}，建议叠加麦当劳优惠券进一步节省。`;
+  document.getElementById("tip").textContent = "💡 " + tip;
+
+  const res = document.getElementById("result");
+  res.style.display = "block";
+  res.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+/* 首屏自动生成一个示例，方便评审直接看到结果 */
+window.addEventListener("DOMContentLoaded", ()=> generate());
+</script>
+</body>
+</html>
